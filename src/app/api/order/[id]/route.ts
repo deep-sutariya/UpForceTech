@@ -3,14 +3,14 @@ import { connectDB } from '@/lib/db';
 import Order from '@/models/Order';
 import { verifyToken } from '@/lib/middleware/auth';
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest) {
   try {
+    const {pathname} = new URL(req.url);
+    const id = pathname.split("/")[3];
     await connectDB();
     const user = await verifyToken(req);
-    console.log(params);
     
-    
-    const order = await Order.findOne({ _id: params.id, user: user.id });
+    const order = await Order.findOne({ _id: id, user: user.id });
 
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
